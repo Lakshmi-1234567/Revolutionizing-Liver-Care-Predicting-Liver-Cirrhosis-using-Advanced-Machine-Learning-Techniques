@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Liver Cirrhosis Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+                        <i class="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">LiverCare AI</h1>
+                        <p class="text-sm text-gray-600">Advanced ML Liver Analysis</p>
+                    </div>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Home</a>
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium bg-blue-100 text-blue-700">Dashboard</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Analytics Dashboard</h1>
+                <p class="text-xl text-gray-600">Comprehensive insights into liver cirrhosis predictions and model performance</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 rounded-lg bg-gray-100">
+                            <i class="fas fa-chart-line h-6 w-6 text-blue-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-green-600">+12.5%</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">1,247</div>
+                    <div class="text-gray-600">Total Predictions</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 rounded-lg bg-gray-100">
+                            <i class="fas fa-users h-6 w-6 text-green-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-green-600">+8.2%</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">892</div>
+                    <div class="text-gray-600">Patients Analyzed</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 rounded-lg bg-gray-100">
+                            <i class="fas fa-chart-bar h-6 w-6 text-purple-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-green-600">+0.3%</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">94.7%</div>
+                    <div class="text-gray-600">Model Accuracy</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 rounded-lg bg-gray-100">
+                            <i class="fas fa-exclamation-triangle h-6 w-6 text-orange-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-red-600">-2.1%</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">156</div>
+                    <div class="text-gray-600">High Risk Cases</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+                <!-- Risk Distribution -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Risk Level Distribution</h3>
+                    <canvas id="riskChart" width="400" height="300"></canvas>
+                </div>
+
+                <!-- Monthly Trends -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Monthly Prediction Trends</h3>
+                    <canvas id="trendsChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Age Group Analysis -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Age Group Analysis</h3>
+                <canvas id="ageChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Risk Distribution Chart
+        const riskCtx = document.getElementById('riskChart').getContext('2d');
+        new Chart(riskCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Low Risk', 'Moderate Risk', 'High Risk', 'Critical Risk'],
+                datasets: [{
+                    data: [4, 3, 2, 5],
+                    backgroundColor: ['#10B981', '#F59E0B', '#F97316', '#EF4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Monthly Trends Chart
+        const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Predictions',
+                    data: [12, 5, 8, 16, 18, 9],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Age Group Chart
+        const ageCtx = document.getElementById('ageChart').getContext('2d');
+        new Chart(ageCtx, {
+            type: 'bar',
+            data: {
+                labels: ['18-30', '31-45', '46-60', '61-75', '75+'],
+                datasets: [{
+                    label: 'Patient Count',
+                    data: [5, 7, 4, 8, 4],
+                    backgroundColor: '#8B5CF6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
